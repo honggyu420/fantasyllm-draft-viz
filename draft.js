@@ -59,7 +59,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     draftData = await response.json();
     initializeDraftBoard();
     setupEventListeners();
-    updateStatistics();
   } catch (error) {
     console.error("Error loading draft data:", error);
   }
@@ -309,9 +308,6 @@ function animatePick(pickIndex) {
   updateProgress(pickIndex + 1);
 
   // Removed particle effects for cleaner UI
-
-  // Update statistics
-  updateStatistics();
 }
 
 // Update draft status display
@@ -508,8 +504,6 @@ function jumpToPick(pickIndex) {
     updateDraftStatus(draftData.pick_history[currentPickIndex]);
     updateProgress(currentPickIndex + 1);
   }
-
-  updateStatistics();
 }
 
 // Reset draft
@@ -542,106 +536,8 @@ function resetDraft(updateStatus = true) {
       '<span class="picking-team">Click play to begin draft</span>';
     document.getElementById("pick-label").textContent = "Pick 1";
   }
-
-  // Reset statistics
-  updateStatistics();
 }
 
-// Update statistics
-function updateStatistics() {
-  if (currentPickIndex < 0) {
-    document.getElementById("best-value").textContent = "-";
-    document.getElementById("biggest-reach").textContent = "-";
-    document.getElementById("popular-position").textContent = "-";
-    document.getElementById("avg-value").textContent = "-";
-    return;
-  }
-
-  const completedPicks = draftData.pick_history.slice(0, currentPickIndex + 1);
-
-  // Best value pick
-  let bestValue = null;
-  let bestValueDiff = 0;
-
-  completedPicks.forEach((pick, index) => {
-    const team = draftData.teams[pick.team];
-    const player = team.roster[pick.player_position].find(
-      (p) => p.id === pick.player_id
-    );
-    if (player) {
-      const diff = index + 1 - player.draft_rank;
-      if (diff > bestValueDiff) {
-        bestValueDiff = diff;
-        bestValue = pick;
-      }
-    }
-  });
-
-  if (bestValue) {
-    document.getElementById("best-value").innerHTML = `
-            ${bestValue.player_name} <small>(+${bestValueDiff})</small>
-        `;
-  }
-
-  // Biggest reach
-  let biggestReach = null;
-  let biggestReachDiff = 0;
-
-  completedPicks.forEach((pick, index) => {
-    const team = draftData.teams[pick.team];
-    const player = team.roster[pick.player_position].find(
-      (p) => p.id === pick.player_id
-    );
-    if (player) {
-      const diff = player.draft_rank - (index + 1);
-      if (diff > biggestReachDiff) {
-        biggestReachDiff = diff;
-        biggestReach = pick;
-      }
-    }
-  });
-
-  if (biggestReach) {
-    document.getElementById("biggest-reach").innerHTML = `
-            ${biggestReach.player_name} <small>(-${biggestReachDiff})</small>
-        `;
-  }
-
-  // Position distribution
-  const positionCounts = { GKP: 0, DEF: 0, MID: 0, FWD: 0 };
-  completedPicks.forEach((pick) => {
-    positionCounts[pick.player_position]++;
-  });
-
-  const mostPopular = Object.entries(positionCounts).sort(
-    (a, b) => b[1] - a[1]
-  )[0];
-
-  document.getElementById("popular-position").innerHTML = `
-        ${mostPopular[0]} <small>(${mostPopular[1]} picks)</small>
-    `;
-
-  // Average pick value
-  let totalValue = 0;
-  let validPicks = 0;
-
-  completedPicks.forEach((pick, index) => {
-    const team = draftData.teams[pick.team];
-    const player = team.roster[pick.player_position].find(
-      (p) => p.id === pick.player_id
-    );
-    if (player) {
-      totalValue += index + 1 - player.draft_rank;
-      validPicks++;
-    }
-  });
-
-  const avgValue = validPicks > 0 ? (totalValue / validPicks).toFixed(1) : 0;
-  document.getElementById("avg-value").innerHTML =
-    avgValue > 0
-      ? `<span style="color: #10B981">+${avgValue}</span>`
-      : `<span style="color: #EF4444">${avgValue}</span>`;
-}
 
 // Initialize round markers on the progress bar
 function initializeRoundMarkers() {
