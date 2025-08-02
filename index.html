@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Fantasy Premier League Draft 2025</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">
+                <span class="title-main">LLM Fantasy Draft</span>
+                <span class="title-sub">7 AI Models Battle for Premier League Glory</span>
+            </h1>
+        </header>
+
+        <!-- Playback Controls with Pick Announcement -->
+        <div class="controls">
+            <button class="control-btn" id="play-pause-btn">
+                <svg class="play-icon" viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+                <svg class="pause-icon hidden" viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                </svg>
+            </button>
+            
+            <div class="speed-control">
+                <label>Speed:</label>
+                <select id="speed-select">
+                    <option value="0.5">Slow</option>
+                    <option value="0.75">Normal</option>
+                    <option value="1" selected>Fast</option>
+                </select>
+            </div>
+            
+            <div class="progress-section">
+                <div class="current-pick-display" id="current-pick-display">
+                    <div class="picking-team">Waiting to start...</div>
+                    <div class="picking-action"></div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                    <div class="round-markers" id="round-markers"></div>
+                    <div class="progress-handle" id="progress-handle">
+                        <div class="pick-label" id="pick-label">Pick 1</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="control-btn" id="reset-btn">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Main Draft Board -->
+        <div class="draft-board" id="draft-board">
+            <!-- Team columns will be dynamically generated -->
+        </div>
+
+        <!-- Pick Details Panel -->
+        <div class="pick-details" id="pick-details">
+            <div class="details-header">
+                <button class="close-btn" onclick="closePickDetails()">×</button>
+            </div>
+            <div class="details-content" id="details-content">
+                <!-- Pick details will be shown here -->
+            </div>
+        </div>
+
+        <!-- Statistics Panel -->
+        <div class="stats-panel">
+            <h3>Draft Statistics</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Best Value Pick</h4>
+                    <div id="best-value" class="stat-value">-</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Biggest Reach</h4>
+                    <div id="biggest-reach" class="stat-value">-</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Most Popular Position</h4>
+                    <div id="popular-position" class="stat-value">-</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Average Pick Value</h4>
+                    <div id="avg-value" class="stat-value">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="draft.js"></script>
+</body>
+</html>
