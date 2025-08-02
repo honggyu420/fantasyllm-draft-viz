@@ -74,10 +74,9 @@ function initializeDraftBoard() {
     const column = createTeamColumn(teamId, teamData);
     board.appendChild(column);
   });
-  
+
   // Initialize round markers
   initializeRoundMarkers();
-  
 }
 
 // Create a team column
@@ -162,42 +161,126 @@ function setupEventListeners() {
     .getElementById("play-pause-btn")
     .addEventListener("click", togglePlayback);
   document.getElementById("reset-btn").addEventListener("click", resetDraft);
-  
-  // Speed control sliding
+
+  // Speed control interaction - improved for mobile
   const speedControl = document.getElementById("speed-control");
   let speedTimeout;
-  
+  let isExpanded = false;
+
+  // Better mobile detection
+  const isMobile = () => {
+    return (
+      window.innerWidth <= 768 ||
+      "ontouchstart" in window ||
+      navigator.maxTouchPoints > 0
+    );
+  };
+
+  // Add touch device class for CSS targeting
+  if (isMobile()) {
+    document.body.classList.add("touch-device");
+  }
+
+  // Mouse events for desktop only
   speedControl.addEventListener("mouseenter", () => {
-    clearTimeout(speedTimeout);
-    speedControl.classList.add("expanded");
-  });
-  
-  speedControl.addEventListener("mouseleave", () => {
-    speedTimeout = setTimeout(() => {
-      speedControl.classList.remove("expanded");
-    }, 500);
-  });
-  
-  // For mobile - tap to expand
-  speedControl.addEventListener("click", (e) => {
-    if (!e.target.classList.contains("speed-option")) {
-      speedControl.classList.toggle("expanded");
+    if (!isMobile()) {
+      clearTimeout(speedTimeout);
+      speedControl.classList.add("expanded");
+      isExpanded = true;
     }
   });
-  
-  // Speed option selection
-  document.querySelectorAll(".speed-option").forEach(option => {
-    option.addEventListener("click", (e) => {
+
+  speedControl.addEventListener("mouseleave", () => {
+    if (!isMobile()) {
+      speedTimeout = setTimeout(() => {
+        speedControl.classList.remove("expanded");
+        isExpanded = false;
+      }, 500);
+    }
+  });
+
+  // Touch/click events for mobile and desktop
+  speedControl.addEventListener("click", (e) => {
+    // On mobile, if not expanded, always expand regardless of what was clicked
+    if (isMobile() && !isExpanded) {
+      e.preventDefault();
       e.stopPropagation();
+
+      // Clear any existing timeout
+      clearTimeout(speedTimeout);
+
+      // Expand
+      isExpanded = true;
+      speedControl.classList.add("expanded");
+
+      // Auto-collapse after 4 seconds if no selection
+      speedTimeout = setTimeout(() => {
+        speedControl.classList.remove("expanded");
+        isExpanded = false;
+      }, 4000);
+
+      return; // Exit early to prevent other logic
+    }
+
+    // Desktop behavior or mobile when expanded
+    if (!e.target.classList.contains("speed-option")) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Clear any existing timeout
+      clearTimeout(speedTimeout);
+
+      // Toggle expansion
+      isExpanded = !isExpanded;
+      speedControl.classList.toggle("expanded", isExpanded);
+
+      // Auto-collapse on mobile after 4 seconds if no selection
+      if (isMobile() && isExpanded) {
+        speedTimeout = setTimeout(() => {
+          speedControl.classList.remove("expanded");
+          isExpanded = false;
+        }, 4000);
+      }
+    }
+  });
+
+  // Close speed control when clicking outside (mobile only)
+  document.addEventListener("click", (e) => {
+    if (isMobile() && isExpanded && !speedControl.contains(e.target)) {
+      clearTimeout(speedTimeout);
+      speedControl.classList.remove("expanded");
+      isExpanded = false;
+    }
+  });
+
+  // Speed option selection
+  document.querySelectorAll(".speed-option").forEach((option) => {
+    option.addEventListener("click", (e) => {
+      // On mobile when collapsed, don't stop propagation so the parent handler can expand
+      if (!(isMobile() && !isExpanded)) {
+        e.stopPropagation();
+      }
+      e.preventDefault();
+      clearTimeout(speedTimeout);
+
+      // If mobile and collapsed, don't change speed - just let it expand
+      if (isMobile() && !isExpanded) {
+        return;
+      }
+
       // Remove active class from all options
-      document.querySelectorAll(".speed-option").forEach(o => o.classList.remove("active"));
+      document
+        .querySelectorAll(".speed-option")
+        .forEach((o) => o.classList.remove("active"));
       // Add active class to clicked option
       e.target.classList.add("active");
       // Update playback speed
       playbackSpeed = parseFloat(e.target.dataset.speed);
+
       // Collapse after selection
       setTimeout(() => {
         speedControl.classList.remove("expanded");
+        isExpanded = false;
       }, 200);
     });
   });
@@ -205,30 +288,34 @@ function setupEventListeners() {
   // Progress bar interaction
   const progressBar = document.querySelector(".progress-bar");
   const totalTeams = Object.keys(draftData.teams).length;
-  
+
   progressBar.addEventListener("click", (e) => {
     const rect = progressBar.getBoundingClientRect();
     const percent = (e.clientX - rect.left) / rect.width;
-    
+
     // Calculate the exact pick position clicked
     const exactPick = percent * draftData.pick_history.length;
-    
+
     // Calculate which round this falls into
     const currentRound = Math.ceil(exactPick / totalTeams);
-    
+
     // Calculate the start and end picks of this round
     const roundStartPick = (currentRound - 1) * totalTeams;
-    const roundEndPick = Math.min(currentRound * totalTeams - 1, draftData.pick_history.length - 1);
-    
+    const roundEndPick = Math.min(
+      currentRound * totalTeams - 1,
+      draftData.pick_history.length - 1
+    );
+
     // Determine which boundary is closer
     const distanceToStart = Math.abs(exactPick - roundStartPick);
     const distanceToEnd = Math.abs(exactPick - roundEndPick);
-    
+
     // Jump to the closer boundary
-    const targetPick = distanceToStart <= distanceToEnd ? roundStartPick : roundEndPick;
+    const targetPick =
+      distanceToStart <= distanceToEnd ? roundStartPick : roundEndPick;
     jumpToPick(targetPick);
   });
-  
+
   // Add hover tooltip for progress bar
   let tooltip = null;
   progressBar.addEventListener("mouseenter", () => {
@@ -236,19 +323,25 @@ function setupEventListeners() {
     tooltip.className = "progress-tooltip";
     document.body.appendChild(tooltip);
   });
-  
+
   progressBar.addEventListener("mousemove", (e) => {
     if (!tooltip) return;
-    
+
     const rect = progressBar.getBoundingClientRect();
     const percent = (e.clientX - rect.left) / rect.width;
-    const hoveredRound = Math.max(1, Math.min(draftData.total_rounds, Math.ceil(percent * draftData.total_rounds)));
-    
+    const hoveredRound = Math.max(
+      1,
+      Math.min(
+        draftData.total_rounds,
+        Math.ceil(percent * draftData.total_rounds)
+      )
+    );
+
     tooltip.textContent = `Round ${hoveredRound}`;
     tooltip.style.left = e.pageX + "px";
-    tooltip.style.top = (rect.top + window.scrollY - 30) + "px";
+    tooltip.style.top = rect.top + window.scrollY - 30 + "px";
   });
-  
+
   progressBar.addEventListener("mouseleave", () => {
     if (tooltip) {
       tooltip.remove();
@@ -328,19 +421,19 @@ function updateDraftStatus(pick) {
           positionColors[pick.player_position]
         }">${pick.player_position}</span>
     `;
-  
+
   // Update pick label on handle
   document.getElementById("pick-label").textContent = `Pick ${pick.pick}`;
 
   // Flash the team column
   const teamColumn = document.getElementById(`team-${pick.team}`);
   if (teamColumn) {
-    teamColumn.classList.add('picking');
+    teamColumn.classList.add("picking");
     setTimeout(() => {
-      teamColumn.classList.remove('picking');
+      teamColumn.classList.remove("picking");
     }, 800);
   }
-  
+
   // Auto-scroll is now handled diagonally in the addPlayerCard function
 }
 
@@ -395,13 +488,13 @@ function addPlayerToTeam(teamId, position, playerCard, pick) {
     ).textContent = `${filledSlots}/${getPositionLimit(position)}`;
 
     // Add highlight effect for new picks
-    playerCard.classList.add('new-pick');
+    playerCard.classList.add("new-pick");
     playerCard.style.opacity = "0";
 
     requestAnimationFrame(() => {
       playerCard.style.transition = "opacity 0.3s ease-out";
       playerCard.style.opacity = "1";
-      
+
       // Scroll diagonally to the player card in horizontal scroll mode
       if (window.innerWidth <= 1400) {
         setTimeout(() => {
@@ -410,10 +503,10 @@ function addPlayerToTeam(teamId, position, playerCard, pick) {
       } else {
         scrollToPlayerCard(playerCard);
       }
-      
+
       // Remove the highlight class after animation
       setTimeout(() => {
-        playerCard.classList.remove('new-pick');
+        playerCard.classList.remove("new-pick");
       }, 800);
     });
   }
@@ -428,13 +521,17 @@ function showPickDetails(pick) {
         <div class="pick-summary">
             <div class="pick-player-name">${pick.player_name}</div>
             <div class="pick-meta">
-                <span class="pick-position" style="color: ${positionColors[pick.player_position]}">${pick.player_position}</span>
+                <span class="pick-position" style="color: ${
+                  positionColors[pick.player_position]
+                }">${pick.player_position}</span>
                 <span class="separator">•</span>
                 <span>Pick #${pick.pick}</span>
                 <span class="separator">•</span>
                 <span>Round ${pick.round}</span>
             </div>
-            <div class="pick-team">by <span style="color: ${teamColors[pick.team].primary}">${formatTeamName(pick.team)}</span></div>
+            <div class="pick-team">by <span style="color: ${
+              teamColors[pick.team].primary
+            }">${formatTeamName(pick.team)}</span></div>
         </div>
         ${
           pick.reasoning
@@ -538,82 +635,81 @@ function resetDraft(updateStatus = true) {
   }
 }
 
-
 // Initialize round markers on the progress bar
 function initializeRoundMarkers() {
   const markersContainer = document.getElementById("round-markers");
   if (!markersContainer) return;
-  
+
   markersContainer.innerHTML = "";
-  
+
   const totalPicks = draftData.pick_history.length;
   const totalTeams = Object.keys(draftData.teams).length;
-  
+
   // Add a marker at the start of each round
   for (let round = 1; round <= draftData.total_rounds; round++) {
     const pickNumber = (round - 1) * totalTeams + 1;
     const position = ((pickNumber - 1) / totalPicks) * 100;
-    
+
     const marker = document.createElement("div");
     marker.className = "round-marker";
-    
+
     // Make round 1 more prominent
     if (round === 1) {
       marker.classList.add("major");
-      
+
       // Add label for round 1
       const label = document.createElement("div");
       label.className = "round-marker-label";
       label.textContent = `R${round}`;
       marker.appendChild(label);
     }
-    
+
     marker.style.left = position + "%";
     markersContainer.appendChild(marker);
   }
 }
 
-
 // Scroll diagonally to player card on mobile (both horizontal and vertical)
 function scrollToPlayerCardDiagonal(playerCard, teamId) {
   const board = document.querySelector(".draft-board");
   const teamElement = document.getElementById(`team-${teamId}`);
-  
+
   if (!teamElement || !board) return;
-  
+
   // Use native smooth scrolling but coordinate the timing
   // First scroll horizontally to the team
   const teamRect = teamElement.getBoundingClientRect();
   const boardRect = board.getBoundingClientRect();
-  const horizontalTarget = teamElement.offsetLeft - (boardRect.width - teamRect.width) / 2;
-  
+  const horizontalTarget =
+    teamElement.offsetLeft - (boardRect.width - teamRect.width) / 2;
+
   board.scrollTo({
     left: horizontalTarget,
-    behavior: 'smooth'
+    behavior: "smooth",
   });
-  
+
   // Then check if we need to scroll vertically
   setTimeout(() => {
     const cardRect = playerCard.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
     const controlsHeight = 100; // Height of floating controls
     const effectiveViewportHeight = viewportHeight - controlsHeight;
-    
+
     // Check if card is already reasonably visible
     const cardTop = cardRect.top;
     const cardBottom = cardRect.bottom;
     const reasonableTop = 50; // Margin from top
     const reasonableBottom = effectiveViewportHeight - 50; // Margin from bottom (accounting for controls)
-    
+
     // Only scroll if card is not in reasonable view
     if (cardTop < reasonableTop || cardBottom > reasonableBottom) {
       const cardCenter = cardRect.top + cardRect.height / 2;
       const targetCenter = effectiveViewportHeight / 2;
       const verticalTarget = window.scrollY + cardCenter - targetCenter;
-      
+
       window.scrollTo({
         top: Math.max(0, verticalTarget),
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
   }, 400); // Increased delay when vertical scroll is needed
@@ -623,28 +719,28 @@ function scrollToPlayerCardDiagonal(playerCard, teamId) {
 function scrollToPlayerCard(playerCard) {
   const rect = playerCard.getBoundingClientRect();
   const viewportHeight = window.innerHeight;
-  
+
   // In horizontal scroll mode, account for the floating controls at the bottom
   const isHorizontalMode = window.innerWidth <= 1400;
   const controlsHeight = isHorizontalMode ? 100 : 0; // Approximate height of floating controls
   const effectiveViewportHeight = viewportHeight - controlsHeight;
-  
+
   // Calculate the ideal scroll position to center the card in the effective viewport
   const cardCenter = rect.top + rect.height / 2;
   const targetCenter = effectiveViewportHeight / 2;
   const idealScrollY = window.scrollY + cardCenter - targetCenter;
-  
+
   // Only scroll if the card is not already visible in a good position
   const cardTop = rect.top;
   const cardBottom = rect.bottom;
   const visibleTop = 50; // Leave some margin at top
   const visibleBottom = effectiveViewportHeight - 50; // Leave margin at bottom
-  
+
   // Check if card is already well-positioned
   if (cardTop < visibleTop || cardBottom > visibleBottom) {
     window.scrollTo({
       top: Math.max(0, idealScrollY),
-      behavior: 'smooth'
+      behavior: "smooth",
     });
   }
 }
@@ -652,30 +748,28 @@ function scrollToPlayerCard(playerCard) {
 // Scroll to team when they make a pick (horizontal scroll mode)
 function scrollToActiveTeam(teamId) {
   if (window.innerWidth > 1400) return; // Only in horizontal scroll mode
-  
+
   const teamElement = document.getElementById(`team-${teamId}`);
   if (teamElement) {
     // Add active highlight
-    document.querySelectorAll(".team-column").forEach(col => {
+    document.querySelectorAll(".team-column").forEach((col) => {
       col.classList.remove("active-pick");
     });
     teamElement.classList.add("active-pick");
-    
+
     // Scroll to team
-    teamElement.scrollIntoView({ 
-      behavior: "smooth", 
+    teamElement.scrollIntoView({
+      behavior: "smooth",
       inline: "center",
-      block: "nearest" 
+      block: "nearest",
     });
-    
+
     // Remove highlight after animation
     setTimeout(() => {
       teamElement.classList.remove("active-pick");
     }, 2000);
   }
 }
-
-
 
 // Global function for closing details
 window.closePickDetails = closePickDetails;

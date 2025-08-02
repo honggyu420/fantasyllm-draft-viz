@@ -1,67 +1,68 @@
 /* LLM Fantasy Draft Visualization Styles */
 
 :root {
-    --bg-primary: #0a0a0b;
-    --bg-secondary: #1a1a1b;
-    --bg-tertiary: #2a2a2b;
-    --text-primary: #ffffff;
-    --text-secondary: #a0a0a0;
-    --border-color: #3a3a3b;
-    --accent-blue: #3B82F6;
-    --accent-green: #10B981;
-    --accent-yellow: #F59E0B;
-    --accent-red: #EF4444;
+  --bg-primary: #0a0a0b;
+  --bg-secondary: #1a1a1b;
+  --bg-tertiary: #2a2a2b;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --border-color: #3a3a3b;
+  --accent-blue: #3b82f6;
+  --accent-green: #10b981;
+  --accent-yellow: #f59e0b;
+  --accent-red: #ef4444;
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    overflow-x: hidden;
-    min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  min-height: 100vh;
 }
 
 .container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 15px;
-    padding-bottom: 120px; /* Space for floating controls */
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 15px;
+  padding-bottom: 120px; /* Space for floating controls */
 }
 
 /* Header */
 .header {
-    text-align: center;
-    margin-bottom: 20px;
-    padding: 15px 0;
-    position: relative;
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 15px 0;
+  position: relative;
 }
 
 .title {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .title-main {
-    font-size: 2.2rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #3B82F6, #10B981, #F59E0B, #EF4444);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #3b82f6, #10b981, #f59e0b, #ef4444);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
 }
 
 .title-sub {
-    font-size: 1.2rem;
-    color: var(--text-secondary);
-    font-weight: 400;
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  font-weight: 400;
 }
 
 /* Removed glow animation */
@@ -70,581 +71,608 @@ body {
 
 /* Progress Section with Pick Display */
 .progress-section {
-    order: -1;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  order: -1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .current-pick-display {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    min-height: 20px;
-    flex-wrap: wrap;
-    font-size: 0.8rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 20px;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
 }
 
 .pick-context {
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-    font-weight: 500;
-    margin-right: 6px;
-    padding-right: 6px;
-    border-right: 1px solid var(--border-color);
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-right: 6px;
+  padding-right: 6px;
+  border-right: 1px solid var(--border-color);
 }
 
 .picking-team {
-    font-size: 0.85rem;
-    font-weight: 700;
+  font-size: 0.85rem;
+  font-weight: 700;
 }
 
 .picking-action {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
 }
 
 .player-name {
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0 4px;
-    font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 4px;
+  font-size: 0.85rem;
 }
 
 .player-position {
-    font-weight: 700;
-    margin-left: 4px;
-    font-size: 0.85rem;
+  font-weight: 700;
+  margin-left: 4px;
+  font-size: 0.85rem;
 }
-
-
 
 /* Removed flash animation */
 
 /* Playback Controls - Floating */
 .controls {
-    position: fixed;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 95%;
-    max-width: 450px;
-    background: rgba(26, 26, 27, 0.5);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(58, 58, 59, 0.3);
-    border-radius: 32px;
-    padding: 12px 16px;
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  max-width: 450px;
+  background: rgba(26, 26, 27, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(58, 58, 59, 0.3);
+  border-radius: 32px;
+  padding: 12px 16px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
 }
 
 .control-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 0;
-    position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 0;
+  position: relative;
 }
 
 .control-btn {
-    background: transparent;
-    border: none;
-    padding: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.8;
+  background: transparent;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
 }
 
 .control-btn:hover {
-    opacity: 1;
-    transform: scale(1.05);
+  opacity: 1;
+  transform: scale(1.05);
 }
 
 .control-btn.primary {
-    padding: 8px;
-    opacity: 0.9;
+  padding: 8px;
+  opacity: 0.9;
 }
 
 .control-btn.primary:hover {
-    opacity: 1;
-    transform: scale(1.05);
+  opacity: 1;
+  transform: scale(1.05);
 }
 
 .control-btn.primary svg {
-    width: 28px;
-    height: 28px;
+  width: 28px;
+  height: 28px;
 }
 
 .control-btn svg {
-    fill: var(--text-primary);
-    width: 20px;
-    height: 20px;
+  fill: var(--text-primary);
+  width: 20px;
+  height: 20px;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 .speed-control {
-    position: absolute;
-    left: 0;
-    display: flex;
-    background: rgba(42, 42, 43, 0.5);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border-radius: 20px;
-    padding: 2px;
-    overflow: hidden;
-    width: 50px;
-    transition: width 0.3s ease;
-    cursor: pointer;
+  position: absolute;
+  left: 0;
+  display: flex;
+  background: rgba(42, 42, 43, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 20px;
+  padding: 2px;
+  overflow: hidden;
+  width: 50px;
+  transition: width 0.3s ease;
+  cursor: pointer;
 }
 
 .speed-control.expanded {
-    width: 140px;
+  width: 140px;
 }
 
 #reset-btn {
-    position: absolute;
-    right: 0;
+  position: absolute;
+  right: 0;
 }
 
 .speed-option {
-    background: transparent;
-    border: none;
-    color: var(--text-secondary);
-    padding: 5px 10px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 16px;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    position: absolute;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 16px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  /* Improve touch targets */
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Prevent text selection on mobile */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Improve tap response */
+  -webkit-tap-highlight-color: transparent;
 }
 
 .speed-option.active {
-    opacity: 1;
-    pointer-events: auto;
-    position: relative;
-    background: var(--accent-blue);
-    color: var(--text-primary);
+  opacity: 1;
+  pointer-events: auto;
+  position: relative;
+  background: var(--accent-blue);
+  color: var(--text-primary);
 }
 
 .speed-control.expanded .speed-option {
-    opacity: 1;
-    pointer-events: auto;
-    position: relative;
+  opacity: 1;
+  pointer-events: auto;
+  position: relative;
 }
 
-.speed-option:hover {
+/* Only apply hover effects on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+  .speed-option:hover {
     background: var(--bg-secondary);
     color: var(--text-primary);
+  }
+
+  .speed-control.expanded .speed-option.active:hover {
+    background: var(--accent-blue);
+  }
 }
 
-.speed-control.expanded .speed-option.active {
-    background: var(--accent-blue);
+/* Touch device specific styles */
+.touch-device .speed-option:hover {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.touch-device .speed-option.active:hover {
+  background: var(--accent-blue);
+  color: var(--text-primary);
 }
 
 .progress-bar {
-    width: 100%;
-    height: 6px;
-    background: rgba(42, 42, 43, 0.4);
-    border-radius: 12px;
-    position: relative;
-    cursor: pointer;
-    overflow: hidden;
+  width: 100%;
+  height: 6px;
+  background: rgba(42, 42, 43, 0.4);
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
 }
 
 .progress-tooltip {
-    position: absolute;
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    white-space: nowrap;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--border-color);
-    pointer-events: none;
-    z-index: 1000;
-    transform: translateX(-50%);
+  position: absolute;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+  pointer-events: none;
+  z-index: 1000;
+  transform: translateX(-50%);
 }
 
 .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #3B82F6, #10B981);
-    width: 0%;
-    transition: width 0.3s ease;
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #10b981);
+  width: 0%;
+  transition: width 0.3s ease;
 }
 
 .progress-handle {
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 14px;
-    height: 14px;
-    background: var(--text-primary);
-    border-radius: 50%;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    left: 0%;
-    transition: left 0.3s ease;
-    z-index: 3;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  left: 0%;
+  transition: left 0.3s ease;
+  z-index: 3;
 }
 
 .pick-label {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-bottom: 4px;
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    padding: 2px 6px;
-    border-radius: 10px;
-    font-size: 0.65rem;
-    font-weight: 600;
-    white-space: nowrap;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--border-color);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 4px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
 }
 
 .pick-label::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-top: 4px solid var(--bg-tertiary);
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid var(--bg-tertiary);
 }
 
 .round-markers {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  pointer-events: none;
 }
 
 .round-marker {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: var(--border-color);
-    opacity: 0.5;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-color);
+  opacity: 0.5;
 }
 
 .round-marker.major {
-    background: var(--text-secondary);
-    opacity: 0.7;
+  background: var(--text-secondary);
+  opacity: 0.7;
 }
 
 .round-marker-label {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-top: 4px;
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-    font-weight: 500;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 4px;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 /* Draft Board */
 .draft-board {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .team-column {
-    background: rgba(26, 26, 27, 0.6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 28px;
-    border: 1px solid rgba(58, 58, 59, 0.3);
-    overflow: hidden;
-    transition: transform 0.2s;
+  background: rgba(26, 26, 27, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 28px;
+  border: 1px solid rgba(58, 58, 59, 0.3);
+  overflow: hidden;
+  transition: transform 0.2s;
 }
 
 .team-column:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .team-column.picking {
-    animation: team-flash 0.8s ease-out;
+  animation: team-flash 0.8s ease-out;
 }
 
 @keyframes team-flash {
-    0% {
-        box-shadow: 0 0 0 0 transparent;
-        border-color: var(--border-color);
-    }
-    50% {
-        box-shadow: 0 0 15px 2px var(--team-primary);
-        border-color: var(--team-primary);
-    }
-    100% {
-        box-shadow: 0 0 0 0 transparent;
-        border-color: var(--border-color);
-    }
+  0% {
+    box-shadow: 0 0 0 0 transparent;
+    border-color: var(--border-color);
+  }
+  50% {
+    box-shadow: 0 0 15px 2px var(--team-primary);
+    border-color: var(--team-primary);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+    border-color: var(--border-color);
+  }
 }
 
 .team-header {
-    padding: 10px;
-    text-align: center;
-    color: white;
-    position: relative;
-    overflow: hidden;
+  padding: 10px;
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
 }
 
 .team-header h3 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
 }
 
 .team-roster {
-    padding: 10px;
+  padding: 10px;
 }
 
 .position-section {
-    margin-bottom: 8px;
+  margin-bottom: 8px;
 }
 
 .position-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .position-count {
-    font-size: 0.85rem;
+  font-size: 0.85rem;
 }
 
 .player-slots {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .player-slot {
-    height: 45px;
-    border-radius: 10px;
-    transition: all 0.3s;
-    box-sizing: border-box;
+  height: 45px;
+  border-radius: 10px;
+  transition: all 0.3s;
+  box-sizing: border-box;
 }
 
 .player-slot.empty {
-    background: rgba(42, 42, 43, 0.3);
-    border: 1px dashed rgba(58, 58, 59, 0.3);
-    border-radius: 14px;
+  background: rgba(42, 42, 43, 0.3);
+  border: 1px dashed rgba(58, 58, 59, 0.3);
+  border-radius: 14px;
 }
 
 .player-card {
-    background: linear-gradient(135deg, rgba(42, 42, 43, 0.5), rgba(26, 26, 27, 0.5));
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid var(--position-color, rgba(58, 58, 59, 0.4));
-    border-radius: 14px;
-    padding: 4px 8px 4px 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
-    box-sizing: border-box;
+  background: linear-gradient(
+    135deg,
+    rgba(42, 42, 43, 0.5),
+    rgba(26, 26, 27, 0.5)
+  );
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid var(--position-color, rgba(58, 58, 59, 0.4));
+  border-radius: 14px;
+  padding: 4px 8px 4px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 .player-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: var(--position-color);
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--position-color);
 }
 
 .player-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    border-color: var(--text-primary);
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  border-color: var(--text-primary);
 }
 
 .player-card.new-pick {
-    animation: highlight 0.8s ease-out;
+  animation: highlight 0.8s ease-out;
 }
 
 @keyframes highlight {
-    0% {
-        box-shadow: 0 0 0 0 transparent;
-        border-color: var(--position-color);
-    }
-    50% {
-        box-shadow: 0 0 15px 2px var(--position-color);
-        border-color: var(--position-color);
-        border-width: 2px;
-    }
-    100% {
-        box-shadow: 0 0 0 0 transparent;
-        border-color: var(--position-color);
-        border-width: 1px;
-    }
+  0% {
+    box-shadow: 0 0 0 0 transparent;
+    border-color: var(--position-color);
+  }
+  50% {
+    box-shadow: 0 0 15px 2px var(--position-color);
+    border-color: var(--position-color);
+    border-width: 2px;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+    border-color: var(--position-color);
+    border-width: 1px;
+  }
 }
 
 .player-name {
-    font-weight: 600;
-    font-size: 0.8rem;
-    line-height: 1.2;
-    margin-bottom: 1px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  font-weight: 600;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  margin-bottom: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .player-info {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.7rem;
-    line-height: 1.2;
-    color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  color: var(--text-secondary);
 }
 
 .player-team {
-    color: var(--position-color);
+  color: var(--position-color);
 }
 
 .draft-rank {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 /* Pick Details Panel */
 .pick-details {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
-    background: rgba(26, 26, 27, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 24px;
-    border: 1px solid rgba(58, 58, 59, 0.3);
-    padding: 16px;
-    max-width: 400px;
-    width: 90%;
-    max-height: 60vh;
-    overflow-y: auto;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s;
-    z-index: 1000;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  background: rgba(26, 26, 27, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 24px;
+  border: 1px solid rgba(58, 58, 59, 0.3);
+  padding: 16px;
+  max-width: 400px;
+  width: 90%;
+  max-height: 60vh;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  z-index: 1000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .pick-details.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 .details-header {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 8px;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
 }
 
 .close-btn {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: color 0.2s;
-    padding: 0;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .close-btn:hover {
-    color: var(--text-primary);
+  color: var(--text-primary);
 }
 
 .pick-summary {
-    text-align: center;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 16px;
+  text-align: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 16px;
 }
 
 .pick-player-name {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 8px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
 .pick-meta {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    margin-bottom: 4px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
 }
 
 .pick-meta .separator {
-    margin: 0 8px;
-    opacity: 0.5;
+  margin: 0 8px;
+  opacity: 0.5;
 }
 
 .pick-position {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .pick-team {
-    font-size: 0.95rem;
-    color: var(--text-secondary);
+  font-size: 0.95rem;
+  color: var(--text-secondary);
 }
 
 .pick-team span {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .pick-reasoning {
-    font-size: 0.85rem;
-    line-height: 1.6;
-    color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
 }
-
 
 /* Removed particle effects */
 
@@ -652,94 +680,92 @@ body {
 /* When 7 columns don't fit, switch to horizontal scroll */
 /* Approximate: 7 columns need ~1400px minimum with gaps */
 @media (max-width: 1400px) {
-    /* Carousel wrapper */
-    .draft-board-wrapper {
-        position: relative;
-        width: 100%;
-        margin-bottom: 10px;
-    }
-    
-    .draft-board {
-        display: flex;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        gap: 10px;
-        padding: 0 20px;
-    }
-    
-    .draft-board::-webkit-scrollbar {
-        display: none;
-    }
-    
-    .team-column {
-        flex: 0 0 220px;
-        scroll-snap-align: center;
-        max-width: 220px;
-    }
+  /* Carousel wrapper */
+  .draft-board-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .draft-board {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 10px;
+    padding: 0 20px;
+  }
+
+  .draft-board::-webkit-scrollbar {
+    display: none;
+  }
+
+  .team-column {
+    flex: 0 0 220px;
+    scroll-snap-align: center;
+    max-width: 220px;
+  }
 }
 
 /* Mobile-specific adjustments */
 @media (max-width: 768px) {
-    .container {
-        padding: 8px;
-        padding-bottom: 140px;
-    }
-    
-    .header {
-        padding: 10px 0;
-        margin-bottom: 10px;
-    }
-    
-    .title-main {
-        font-size: 1.5rem;
-    }
-    
-    .title-sub {
-        font-size: 0.9rem;
-    }
-    
-    
-    /* All control styles now use mobile sizes globally - no overrides needed */
-    
-    /* Compact player cards on mobile */
-    .player-slot {
-        height: 38px;
-    }
-    
-    .player-name {
-        font-size: 0.75rem;
-    }
-    
-    .player-info {
-        font-size: 0.65rem;
-    }
-    
-    .position-header {
-        font-size: 0.8rem;
-    }
-    
-    
-    /* Full screen pick details on mobile */
-    .pick-details {
-        max-width: 100%;
-        width: 100%;
-        height: 100%;
-        max-height: 100%;
-        border-radius: 0;
-        top: 0;
-        left: 0;
-        transform: translate(0, 0) scale(1);
-    }
-    
-    .pick-details.show {
-        transform: translate(0, 0) scale(1);
-    }
-    
-    /* Active team highlight */
-    .team-column.active-pick {
-        box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-    }
+  .container {
+    padding: 8px;
+    padding-bottom: 140px;
+  }
+
+  .header {
+    padding: 10px 0;
+    margin-bottom: 10px;
+  }
+
+  .title-main {
+    font-size: 1.5rem;
+  }
+
+  .title-sub {
+    font-size: 0.9rem;
+  }
+
+  /* All control styles now use mobile sizes globally - no overrides needed */
+
+  /* Compact player cards on mobile */
+  .player-slot {
+    height: 38px;
+  }
+
+  .player-name {
+    font-size: 0.75rem;
+  }
+
+  .player-info {
+    font-size: 0.65rem;
+  }
+
+  .position-header {
+    font-size: 0.8rem;
+  }
+
+  /* Full screen pick details on mobile */
+  .pick-details {
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    top: 0;
+    left: 0;
+    transform: translate(0, 0) scale(1);
+  }
+
+  .pick-details.show {
+    transform: translate(0, 0) scale(1);
+  }
+
+  /* Active team highlight */
+  .team-column.active-pick {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  }
 }
