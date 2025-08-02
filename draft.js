@@ -78,6 +78,11 @@ function initializeDraftBoard() {
   
   // Initialize round markers
   initializeRoundMarkers();
+  
+  // Initialize mobile carousel if on mobile
+  if (window.innerWidth <= 768) {
+    initializeMobileCarousel();
+  }
 }
 
 // Create a team column
@@ -306,6 +311,9 @@ function updateDraftStatus(pick) {
       teamColumn.classList.remove('picking');
     }, 800);
   }
+  
+  // Auto-scroll to team on mobile
+  scrollToActiveTeam(pick.team);
 }
 
 // Create player card
@@ -625,6 +633,125 @@ function initializeRoundMarkers() {
     markersContainer.appendChild(marker);
   }
 }
+
+// Initialize mobile carousel
+function initializeMobileCarousel() {
+  const dotsContainer = document.getElementById("carousel-dots");
+  const board = document.getElementById("draft-board");
+  const teams = Object.keys(draftData.teams);
+  
+  // Show dots container on mobile
+  dotsContainer.style.display = "flex";
+  dotsContainer.innerHTML = "";
+  
+  // Create dots
+  teams.forEach((teamId, index) => {
+    const dot = document.createElement("div");
+    dot.className = "carousel-dot";
+    if (index === 0) dot.classList.add("active");
+    
+    // Click dot to scroll to team
+    dot.addEventListener("click", () => {
+      scrollToTeamIndex(index);
+    });
+    
+    dotsContainer.appendChild(dot);
+  });
+  
+  // Update active dot on scroll
+  board.addEventListener("scroll", () => {
+    updateActiveDot();
+  });
+}
+
+// Scroll to specific team by index
+function scrollToTeamIndex(index) {
+  const board = document.getElementById("draft-board");
+  const teamColumns = board.querySelectorAll(".team-column");
+  
+  if (teamColumns[index]) {
+    teamColumns[index].scrollIntoView({ 
+      behavior: "smooth", 
+      inline: "center",
+      block: "nearest" 
+    });
+  }
+}
+
+// Scroll to team when they make a pick (mobile auto-scroll)
+function scrollToActiveTeam(teamId) {
+  if (window.innerWidth > 768) return; // Only on mobile
+  
+  const teamElement = document.getElementById(`team-${teamId}`);
+  if (teamElement) {
+    // Add active highlight
+    document.querySelectorAll(".team-column").forEach(col => {
+      col.classList.remove("active-pick");
+    });
+    teamElement.classList.add("active-pick");
+    
+    // Scroll to team
+    teamElement.scrollIntoView({ 
+      behavior: "smooth", 
+      inline: "center",
+      block: "nearest" 
+    });
+    
+    // Remove highlight after animation
+    setTimeout(() => {
+      teamElement.classList.remove("active-pick");
+    }, 2000);
+  }
+}
+
+// Update active dot based on scroll position
+function updateActiveDot() {
+  const board = document.getElementById("draft-board");
+  const teamColumns = board.querySelectorAll(".team-column");
+  const dots = document.querySelectorAll(".carousel-dot");
+  
+  const scrollLeft = board.scrollLeft;
+  const boardWidth = board.clientWidth;
+  
+  // Find which team is most centered
+  let closestIndex = 0;
+  let minDistance = Infinity;
+  
+  teamColumns.forEach((column, index) => {
+    const rect = column.getBoundingClientRect();
+    const boardRect = board.getBoundingClientRect();
+    const columnCenter = rect.left + rect.width / 2 - boardRect.left;
+    const boardCenter = boardWidth / 2;
+    const distance = Math.abs(columnCenter - boardCenter);
+    
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestIndex = index;
+    }
+  });
+  
+  // Update dots
+  dots.forEach((dot, index) => {
+    if (index === closestIndex) {
+      dot.classList.add("active");
+    } else {
+      dot.classList.remove("active");
+    }
+  });
+}
+
+// Handle window resize
+window.addEventListener("resize", () => {
+  const dotsContainer = document.getElementById("carousel-dots");
+  
+  if (window.innerWidth <= 768) {
+    if (dotsContainer.style.display === "none") {
+      initializeMobileCarousel();
+    }
+  } else {
+    dotsContainer.style.display = "none";
+  }
+});
 
 // Global function for closing details
 window.closePickDetails = closePickDetails;
