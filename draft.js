@@ -79,10 +79,6 @@ function initializeDraftBoard() {
   // Initialize round markers
   initializeRoundMarkers();
   
-  // Initialize mobile carousel if on mobile
-  if (window.innerWidth <= 768) {
-    initializeMobileCarousel();
-  }
 }
 
 // Create a team column
@@ -167,8 +163,44 @@ function setupEventListeners() {
     .getElementById("play-pause-btn")
     .addEventListener("click", togglePlayback);
   document.getElementById("reset-btn").addEventListener("click", resetDraft);
-  document.getElementById("speed-select").addEventListener("change", (e) => {
-    playbackSpeed = parseFloat(e.target.value);
+  
+  // Speed control sliding
+  const speedControl = document.getElementById("speed-control");
+  let speedTimeout;
+  
+  speedControl.addEventListener("mouseenter", () => {
+    clearTimeout(speedTimeout);
+    speedControl.classList.add("expanded");
+  });
+  
+  speedControl.addEventListener("mouseleave", () => {
+    speedTimeout = setTimeout(() => {
+      speedControl.classList.remove("expanded");
+    }, 500);
+  });
+  
+  // For mobile - tap to expand
+  speedControl.addEventListener("click", (e) => {
+    if (!e.target.classList.contains("speed-option")) {
+      speedControl.classList.toggle("expanded");
+    }
+  });
+  
+  // Speed option selection
+  document.querySelectorAll(".speed-option").forEach(option => {
+    option.addEventListener("click", (e) => {
+      e.stopPropagation();
+      // Remove active class from all options
+      document.querySelectorAll(".speed-option").forEach(o => o.classList.remove("active"));
+      // Add active class to clicked option
+      e.target.classList.add("active");
+      // Update playback speed
+      playbackSpeed = parseFloat(e.target.dataset.speed);
+      // Collapse after selection
+      setTimeout(() => {
+        speedControl.classList.remove("expanded");
+      }, 200);
+    });
   });
 
   // Progress bar interaction
@@ -286,18 +318,19 @@ function animatePick(pickIndex) {
 function updateDraftStatus(pick) {
   const pickDisplay = document.getElementById("current-pick-display");
   pickDisplay.innerHTML = `
-        <div class="pick-context">Round ${pick.round}/15 • Pick ${pick.pick}/105</div>
-        <div class="picking-team" style="color: ${
+        <span class="pick-context">R${pick.round} • P${pick.pick}</span>
+        <span class="picking-team" style="color: ${
           teamColors[pick.team].primary
         }">
             ${formatTeamName(pick.team)}
-        </div>
-        <div class="picking-action">
-            selects <span class="player-name">${pick.player_name}</span>
-            <span class="player-position" style="color: ${
-              positionColors[pick.player_position]
-            }">${pick.player_position}</span>
-        </div>
+        </span>
+        <span class="picking-action">
+            selects
+        </span>
+        <span class="player-name">${pick.player_name}</span>
+        <span class="player-position" style="color: ${
+          positionColors[pick.player_position]
+        }">${pick.player_position}</span>
     `;
   
   // Update pick label on handle
@@ -312,8 +345,7 @@ function updateDraftStatus(pick) {
     }, 800);
   }
   
-  // Auto-scroll to team on mobile
-  scrollToActiveTeam(pick.team);
+  // Auto-scroll is now handled diagonally in the addPlayerCard function
 }
 
 // Create player card
@@ -373,6 +405,15 @@ function addPlayerToTeam(teamId, position, playerCard, pick) {
     requestAnimationFrame(() => {
       playerCard.style.transition = "opacity 0.3s ease-out";
       playerCard.style.opacity = "1";
+      
+      // Scroll diagonally to the player card in horizontal scroll mode
+      if (window.innerWidth <= 1400) {
+        setTimeout(() => {
+          scrollToPlayerCardDiagonal(playerCard, pick.team);
+        }, 100);
+      } else {
+        scrollToPlayerCard(playerCard);
+      }
       
       // Remove the highlight class after animation
       setTimeout(() => {
@@ -498,7 +539,7 @@ function resetDraft(updateStatus = true) {
 
   if (updateStatus) {
     document.getElementById("current-pick-display").innerHTML =
-      '<div class="picking-team">Click play to begin draft</div>';
+      '<span class="picking-team">Click play to begin draft</span>';
     document.getElementById("pick-label").textContent = "Pick 1";
   }
 
@@ -605,6 +646,8 @@ function updateStatistics() {
 // Initialize round markers on the progress bar
 function initializeRoundMarkers() {
   const markersContainer = document.getElementById("round-markers");
+  if (!markersContainer) return;
+  
   markersContainer.innerHTML = "";
   
   const totalPicks = draftData.pick_history.length;
@@ -618,11 +661,11 @@ function initializeRoundMarkers() {
     const marker = document.createElement("div");
     marker.className = "round-marker";
     
-    // Make rounds 1, 8, and 15 more prominent
-    if (round === 1 || round === 8 || round === 15) {
+    // Make round 1 more prominent
+    if (round === 1) {
       marker.classList.add("major");
       
-      // Add label for major rounds
+      // Add label for round 1
       const label = document.createElement("div");
       label.className = "round-marker-label";
       label.textContent = `R${round}`;
@@ -634,53 +677,85 @@ function initializeRoundMarkers() {
   }
 }
 
-// Initialize mobile carousel
-function initializeMobileCarousel() {
-  const dotsContainer = document.getElementById("carousel-dots");
-  const board = document.getElementById("draft-board");
-  const teams = Object.keys(draftData.teams);
+
+// Scroll diagonally to player card on mobile (both horizontal and vertical)
+function scrollToPlayerCardDiagonal(playerCard, teamId) {
+  const board = document.querySelector(".draft-board");
+  const teamElement = document.getElementById(`team-${teamId}`);
   
-  // Show dots container on mobile
-  dotsContainer.style.display = "flex";
-  dotsContainer.innerHTML = "";
+  if (!teamElement || !board) return;
   
-  // Create dots
-  teams.forEach((teamId, index) => {
-    const dot = document.createElement("div");
-    dot.className = "carousel-dot";
-    if (index === 0) dot.classList.add("active");
-    
-    // Click dot to scroll to team
-    dot.addEventListener("click", () => {
-      scrollToTeamIndex(index);
-    });
-    
-    dotsContainer.appendChild(dot);
+  // Use native smooth scrolling but coordinate the timing
+  // First scroll horizontally to the team
+  const teamRect = teamElement.getBoundingClientRect();
+  const boardRect = board.getBoundingClientRect();
+  const horizontalTarget = teamElement.offsetLeft - (boardRect.width - teamRect.width) / 2;
+  
+  board.scrollTo({
+    left: horizontalTarget,
+    behavior: 'smooth'
   });
   
-  // Update active dot on scroll
-  board.addEventListener("scroll", () => {
-    updateActiveDot();
-  });
+  // Then check if we need to scroll vertically
+  setTimeout(() => {
+    const cardRect = playerCard.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const controlsHeight = 100; // Height of floating controls
+    const effectiveViewportHeight = viewportHeight - controlsHeight;
+    
+    // Check if card is already reasonably visible
+    const cardTop = cardRect.top;
+    const cardBottom = cardRect.bottom;
+    const reasonableTop = 50; // Margin from top
+    const reasonableBottom = effectiveViewportHeight - 50; // Margin from bottom (accounting for controls)
+    
+    // Only scroll if card is not in reasonable view
+    if (cardTop < reasonableTop || cardBottom > reasonableBottom) {
+      const cardCenter = cardRect.top + cardRect.height / 2;
+      const targetCenter = effectiveViewportHeight / 2;
+      const verticalTarget = window.scrollY + cardCenter - targetCenter;
+      
+      window.scrollTo({
+        top: Math.max(0, verticalTarget),
+        behavior: 'smooth'
+      });
+    }
+  }, 400); // Increased delay when vertical scroll is needed
 }
 
-// Scroll to specific team by index
-function scrollToTeamIndex(index) {
-  const board = document.getElementById("draft-board");
-  const teamColumns = board.querySelectorAll(".team-column");
+// Scroll vertically to center the player card in view
+function scrollToPlayerCard(playerCard) {
+  const rect = playerCard.getBoundingClientRect();
+  const viewportHeight = window.innerHeight;
   
-  if (teamColumns[index]) {
-    teamColumns[index].scrollIntoView({ 
-      behavior: "smooth", 
-      inline: "center",
-      block: "nearest" 
+  // In horizontal scroll mode, account for the floating controls at the bottom
+  const isHorizontalMode = window.innerWidth <= 1400;
+  const controlsHeight = isHorizontalMode ? 100 : 0; // Approximate height of floating controls
+  const effectiveViewportHeight = viewportHeight - controlsHeight;
+  
+  // Calculate the ideal scroll position to center the card in the effective viewport
+  const cardCenter = rect.top + rect.height / 2;
+  const targetCenter = effectiveViewportHeight / 2;
+  const idealScrollY = window.scrollY + cardCenter - targetCenter;
+  
+  // Only scroll if the card is not already visible in a good position
+  const cardTop = rect.top;
+  const cardBottom = rect.bottom;
+  const visibleTop = 50; // Leave some margin at top
+  const visibleBottom = effectiveViewportHeight - 50; // Leave margin at bottom
+  
+  // Check if card is already well-positioned
+  if (cardTop < visibleTop || cardBottom > visibleBottom) {
+    window.scrollTo({
+      top: Math.max(0, idealScrollY),
+      behavior: 'smooth'
     });
   }
 }
 
-// Scroll to team when they make a pick (mobile auto-scroll)
+// Scroll to team when they make a pick (horizontal scroll mode)
 function scrollToActiveTeam(teamId) {
-  if (window.innerWidth > 768) return; // Only on mobile
+  if (window.innerWidth > 1400) return; // Only in horizontal scroll mode
   
   const teamElement = document.getElementById(`team-${teamId}`);
   if (teamElement) {
@@ -704,54 +779,7 @@ function scrollToActiveTeam(teamId) {
   }
 }
 
-// Update active dot based on scroll position
-function updateActiveDot() {
-  const board = document.getElementById("draft-board");
-  const teamColumns = board.querySelectorAll(".team-column");
-  const dots = document.querySelectorAll(".carousel-dot");
-  
-  const scrollLeft = board.scrollLeft;
-  const boardWidth = board.clientWidth;
-  
-  // Find which team is most centered
-  let closestIndex = 0;
-  let minDistance = Infinity;
-  
-  teamColumns.forEach((column, index) => {
-    const rect = column.getBoundingClientRect();
-    const boardRect = board.getBoundingClientRect();
-    const columnCenter = rect.left + rect.width / 2 - boardRect.left;
-    const boardCenter = boardWidth / 2;
-    const distance = Math.abs(columnCenter - boardCenter);
-    
-    if (distance < minDistance) {
-      minDistance = distance;
-      closestIndex = index;
-    }
-  });
-  
-  // Update dots
-  dots.forEach((dot, index) => {
-    if (index === closestIndex) {
-      dot.classList.add("active");
-    } else {
-      dot.classList.remove("active");
-    }
-  });
-}
 
-// Handle window resize
-window.addEventListener("resize", () => {
-  const dotsContainer = document.getElementById("carousel-dots");
-  
-  if (window.innerWidth <= 768) {
-    if (dotsContainer.style.display === "none") {
-      initializeMobileCarousel();
-    }
-  } else {
-    dotsContainer.style.display = "none";
-  }
-});
 
 // Global function for closing details
 window.closePickDetails = closePickDetails;

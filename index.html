@@ -19,7 +19,13 @@
         <!-- Playback Controls with Pick Announcement -->
         <div class="controls">
             <div class="control-row">
-                <button class="control-btn" id="play-pause-btn">
+                <div class="speed-control" id="speed-control">
+                    <button class="speed-option" data-speed="0.5">0.5x</button>
+                    <button class="speed-option" data-speed="0.75">1x</button>
+                    <button class="speed-option active" data-speed="1">2x</button>
+                </div>
+                
+                <button class="control-btn primary" id="play-pause-btn">
                     <svg class="play-icon" viewBox="0 0 24 24" width="24" height="24">
                         <path d="M8 5v14l11-7z"/>
                     </svg>
@@ -27,15 +33,6 @@
                         <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
                     </svg>
                 </button>
-                
-                <div class="speed-control">
-                    <label>Speed:</label>
-                    <select id="speed-select">
-                        <option value="0.5">Slow</option>
-                        <option value="0.75">Normal</option>
-                        <option value="1" selected>Fast</option>
-                    </select>
-                </div>
                 
                 <button class="control-btn" id="reset-btn">
                     <svg viewBox="0 0 24 24" width="24" height="24">
@@ -46,8 +43,7 @@
             
             <div class="progress-section">
                 <div class="current-pick-display" id="current-pick-display">
-                    <div class="picking-team">Waiting to start...</div>
-                    <div class="picking-action"></div>
+                    <span class="picking-team">Waiting to start...</span>
                 </div>
                 <div class="progress-bar">
                     <div class="progress-fill" id="progress-fill"></div>
@@ -63,9 +59,6 @@
         <div class="draft-board-wrapper">
             <div class="draft-board" id="draft-board">
                 <!-- Team columns will be dynamically generated -->
-            </div>
-            <div class="carousel-dots" id="carousel-dots" style="display: none;">
-                <!-- Dots will be dynamically generated -->
             </div>
         </div>
 
