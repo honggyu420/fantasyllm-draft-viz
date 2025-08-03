@@ -104,7 +104,7 @@ function createTeamColumn(teamId, teamData) {
   roster.className = "team-roster";
 
   // Create position sections
-  ["GKP", "DEF", "MID", "FWD"].forEach((position) => {
+  ["FWD", "MID", "DEF", "GKP"].forEach((position) => {
     const section = document.createElement("div");
     section.className = "position-section";
     section.id = `${teamId}-${position}`;
