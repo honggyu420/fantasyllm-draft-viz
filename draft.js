@@ -59,7 +59,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     draftData = await response.json();
     initializeDraftBoard();
     setupEventListeners();
-    updateFastForwardButton(); // Initialize button state
+    updateSkipButtons(); // Initialize button state
   } catch (error) {
     console.error("Error loading draft data:", error);
   }
@@ -165,6 +165,9 @@ function setupEventListeners() {
   document
     .getElementById("fast-forward-btn")
     .addEventListener("click", fastForward);
+  document
+    .getElementById("fast-backward-btn")
+    .addEventListener("click", fastBackward);
 
   // Speed control interaction - improved for mobile
   const speedControl = document.getElementById("speed-control");
@@ -430,20 +433,32 @@ function togglePlayback() {
     clearTimeout(animationTimeout);
   }
 
-  updateFastForwardButton();
+  updateSkipButtons();
 }
 
-// Update fast forward button state
-function updateFastForwardButton() {
+// Update fast forward and fast backward button states
+function updateSkipButtons() {
   const fastForwardBtn = document.getElementById("fast-forward-btn");
+  const fastBackwardBtn = document.getElementById("fast-backward-btn");
   const isAtEnd = currentPickIndex >= draftData.pick_history.length - 1;
+  const isAtStart = currentPickIndex < 0;
 
+  // Fast forward button
   if (isPlaying || isAtEnd) {
     fastForwardBtn.style.opacity = "0.3";
     fastForwardBtn.style.pointerEvents = "none";
   } else {
     fastForwardBtn.style.opacity = "0.8";
     fastForwardBtn.style.pointerEvents = "auto";
+  }
+
+  // Fast backward button
+  if (isPlaying || isAtStart) {
+    fastBackwardBtn.style.opacity = "0.3";
+    fastBackwardBtn.style.pointerEvents = "none";
+  } else {
+    fastBackwardBtn.style.opacity = "0.8";
+    fastBackwardBtn.style.pointerEvents = "auto";
   }
 }
 
@@ -456,7 +471,81 @@ function fastForward() {
     animatePick(currentPickIndex);
   }
 
-  updateFastForwardButton();
+  updateSkipButtons();
+}
+
+// Fast backward to previous pick
+function fastBackward() {
+  if (isPlaying) return; // Don't allow when playing
+
+  if (currentPickIndex > 0) {
+    // Store the pick we want to replay (the previous pick)
+    const pickToReplay = currentPickIndex - 1;
+
+    // Remove the current pick from the board (the one we just saw)
+    const currentPick = draftData.pick_history[currentPickIndex];
+    const currentSection = document.getElementById(
+      `${currentPick.team}-${currentPick.player_position}`
+    );
+    const currentSlots = currentSection.querySelectorAll(
+      ".player-slot:not(.empty)"
+    );
+
+    if (currentSlots.length > 0) {
+      const lastSlot = currentSlots[currentSlots.length - 1];
+      lastSlot.classList.add("empty");
+      lastSlot.innerHTML = "";
+
+      // Update count
+      const filledSlots = currentSection.querySelectorAll(
+        ".player-slot:not(.empty)"
+      ).length;
+      currentSection.querySelector(
+        ".position-count"
+      ).textContent = `${filledSlots}/${getPositionLimit(
+        currentPick.player_position
+      )}`;
+    }
+
+    // Also remove the pick we want to replay (to avoid duplicates)
+    const replayPick = draftData.pick_history[pickToReplay];
+    const replaySection = document.getElementById(
+      `${replayPick.team}-${replayPick.player_position}`
+    );
+    const replaySlots = replaySection.querySelectorAll(
+      ".player-slot:not(.empty)"
+    );
+
+    if (replaySlots.length > 0) {
+      const lastReplaySlot = replaySlots[replaySlots.length - 1];
+      lastReplaySlot.classList.add("empty");
+      lastReplaySlot.innerHTML = "";
+
+      // Update count
+      const filledReplaySlots = replaySection.querySelectorAll(
+        ".player-slot:not(.empty)"
+      ).length;
+      replaySection.querySelector(
+        ".position-count"
+      ).textContent = `${filledReplaySlots}/${getPositionLimit(
+        replayPick.player_position
+      )}`;
+    }
+
+    // Update progress to show state before the pick we're about to replay
+    updateProgress(pickToReplay);
+
+    // Now animate the pick we want to replay
+    currentPickIndex = pickToReplay;
+    animatePick(pickToReplay);
+  } else if (currentPickIndex === 0) {
+    // If we're at pick 0, replay pick 0 from the beginning
+    resetDraft(false);
+    currentPickIndex = 0;
+    animatePick(0);
+  }
+
+  updateSkipButtons();
 }
 
 // Play next pick
@@ -465,7 +554,7 @@ function playNextPick() {
     isPlaying = false;
     document.querySelector(".play-icon").classList.remove("hidden");
     document.querySelector(".pause-icon").classList.add("hidden");
-    updateFastForwardButton();
+    updateSkipButtons();
     return;
   }
 
@@ -748,7 +837,7 @@ function jumpToPick(pickIndex) {
     updateProgress(currentPickIndex + 1);
   }
 
-  updateFastForwardButton();
+  updateSkipButtons();
 }
 
 // Reset draft
@@ -782,7 +871,7 @@ function resetDraft(updateStatus = true) {
     document.getElementById("pick-label").textContent = "Pick 1";
   }
 
-  updateFastForwardButton();
+  updateSkipButtons();
 }
 
 // Initialize round markers on the progress bar
