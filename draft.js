@@ -59,6 +59,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     draftData = await response.json();
     initializeDraftBoard();
     setupEventListeners();
+    updateFastForwardButton(); // Initialize button state
   } catch (error) {
     console.error("Error loading draft data:", error);
   }
@@ -161,6 +162,9 @@ function setupEventListeners() {
     .getElementById("play-pause-btn")
     .addEventListener("click", togglePlayback);
   document.getElementById("reset-btn").addEventListener("click", resetDraft);
+  document
+    .getElementById("fast-forward-btn")
+    .addEventListener("click", fastForward);
 
   // Speed control interaction - improved for mobile
   const speedControl = document.getElementById("speed-control");
@@ -299,21 +303,77 @@ function setupEventListeners() {
     // Calculate which round this falls into
     const currentRound = Math.ceil(exactPick / totalTeams);
 
-    // Calculate the start and end picks of this round
-    const roundStartPick = (currentRound - 1) * totalTeams;
-    const roundEndPick = Math.min(
-      currentRound * totalTeams - 1,
+    // Always snap to the first pick of the round
+    const targetPick = Math.min(
+      (currentRound - 1) * totalTeams,
       draftData.pick_history.length - 1
     );
 
-    // Determine which boundary is closer
-    const distanceToStart = Math.abs(exactPick - roundStartPick);
-    const distanceToEnd = Math.abs(exactPick - roundEndPick);
-
-    // Jump to the closer boundary
-    const targetPick =
-      distanceToStart <= distanceToEnd ? roundStartPick : roundEndPick;
     jumpToPick(targetPick);
+  });
+
+  // Touch support for mobile dragging
+  let isDragging = false;
+  let dragStartX = 0;
+
+  progressBar.addEventListener("touchstart", (e) => {
+    isDragging = true;
+    dragStartX = e.touches[0].clientX;
+
+    // Add dragging class for visual feedback
+    progressBar.classList.add("dragging");
+
+    // Disable smooth transitions during drag
+    const handle = document.getElementById("progress-handle");
+    const fill = document.getElementById("progress-fill");
+    handle.style.transition = "none";
+    fill.style.transition = "none";
+
+    // Prevent scrolling while dragging
+    e.preventDefault();
+  });
+
+  progressBar.addEventListener("touchmove", (e) => {
+    if (!isDragging) return;
+
+    const rect = progressBar.getBoundingClientRect();
+    const currentX = e.touches[0].clientX;
+    const percent = Math.max(
+      0,
+      Math.min(1, (currentX - rect.left) / rect.width)
+    );
+
+    // Calculate pick position and jump to it
+    const exactPick = percent * draftData.pick_history.length;
+    const currentRound = Math.ceil(exactPick / totalTeams);
+
+    // Always snap to the first pick of the round
+    const targetPick = Math.min(
+      (currentRound - 1) * totalTeams,
+      draftData.pick_history.length - 1
+    );
+
+    // Update position immediately during drag
+    jumpToPick(targetPick);
+
+    // Prevent scrolling
+    e.preventDefault();
+  });
+
+  progressBar.addEventListener("touchend", (e) => {
+    if (!isDragging) return;
+    isDragging = false;
+
+    // Remove dragging class
+    progressBar.classList.remove("dragging");
+
+    // Re-enable smooth transitions
+    const handle = document.getElementById("progress-handle");
+    const fill = document.getElementById("progress-fill");
+    handle.style.transition = "left 0.3s ease";
+    fill.style.transition = "width 0.3s ease";
+
+    e.preventDefault();
   });
 
   // Add hover tooltip for progress bar
@@ -369,6 +429,34 @@ function togglePlayback() {
     pauseIcon.classList.add("hidden");
     clearTimeout(animationTimeout);
   }
+
+  updateFastForwardButton();
+}
+
+// Update fast forward button state
+function updateFastForwardButton() {
+  const fastForwardBtn = document.getElementById("fast-forward-btn");
+  const isAtEnd = currentPickIndex >= draftData.pick_history.length - 1;
+
+  if (isPlaying || isAtEnd) {
+    fastForwardBtn.style.opacity = "0.3";
+    fastForwardBtn.style.pointerEvents = "none";
+  } else {
+    fastForwardBtn.style.opacity = "0.8";
+    fastForwardBtn.style.pointerEvents = "auto";
+  }
+}
+
+// Fast forward to next pick
+function fastForward() {
+  if (isPlaying) return; // Don't allow when playing
+
+  if (currentPickIndex < draftData.pick_history.length - 1) {
+    currentPickIndex++;
+    animatePick(currentPickIndex);
+  }
+
+  updateFastForwardButton();
 }
 
 // Play next pick
@@ -377,6 +465,7 @@ function playNextPick() {
     isPlaying = false;
     document.querySelector(".play-icon").classList.remove("hidden");
     document.querySelector(".pause-icon").classList.add("hidden");
+    updateFastForwardButton();
     return;
   }
 
@@ -658,6 +747,8 @@ function jumpToPick(pickIndex) {
     updateDraftStatus(draftData.pick_history[currentPickIndex]);
     updateProgress(currentPickIndex + 1);
   }
+
+  updateFastForwardButton();
 }
 
 // Reset draft
@@ -690,6 +781,8 @@ function resetDraft(updateStatus = true) {
       '<span class="picking-team">Click play to begin draft</span>';
     document.getElementById("pick-label").textContent = "Pick 1";
   }
+
+  updateFastForwardButton();
 }
 
 // Initialize round markers on the progress bar
