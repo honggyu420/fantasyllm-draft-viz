@@ -169,127 +169,28 @@ function setupEventListeners() {
     .getElementById("fast-backward-btn")
     .addEventListener("click", fastBackward);
 
-  // Speed control interaction - improved for mobile
+  // Speed control interaction - simplified to tap-to-cycle
   const speedControl = document.getElementById("speed-control");
-  let speedTimeout;
-  let isExpanded = false;
+  const speeds = [0.5, 1, 2];
+  let currentSpeedIndex = 1; // Start with 1x speed
 
-  // Better mobile detection
-  const isMobile = () => {
-    return (
-      window.innerWidth <= 768 ||
-      "ontouchstart" in window ||
-      navigator.maxTouchPoints > 0
-    );
+  // Update display
+  const updateSpeedDisplay = () => {
+    speedControl.textContent = `${speeds[currentSpeedIndex]}x`;
   };
 
-  // Add touch device class for CSS targeting
-  if (isMobile()) {
-    document.body.classList.add("touch-device");
-  }
+  // Initialize display
+  updateSpeedDisplay();
 
-  // Mouse events for desktop only
-  speedControl.addEventListener("mouseenter", () => {
-    if (!isMobile()) {
-      clearTimeout(speedTimeout);
-      speedControl.classList.add("expanded");
-      isExpanded = true;
-    }
-  });
-
-  speedControl.addEventListener("mouseleave", () => {
-    if (!isMobile()) {
-      speedTimeout = setTimeout(() => {
-        speedControl.classList.remove("expanded");
-        isExpanded = false;
-      }, 500);
-    }
-  });
-
-  // Touch/click events for mobile and desktop
+  // Simple click handler to cycle speeds
   speedControl.addEventListener("click", (e) => {
-    // On mobile, if not expanded, always expand regardless of what was clicked
-    if (isMobile() && !isExpanded) {
-      e.preventDefault();
-      e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
 
-      // Clear any existing timeout
-      clearTimeout(speedTimeout);
-
-      // Expand
-      isExpanded = true;
-      speedControl.classList.add("expanded");
-
-      // Auto-collapse after 4 seconds if no selection
-      speedTimeout = setTimeout(() => {
-        speedControl.classList.remove("expanded");
-        isExpanded = false;
-      }, 4000);
-
-      return; // Exit early to prevent other logic
-    }
-
-    // Desktop behavior or mobile when expanded
-    if (!e.target.classList.contains("speed-option")) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      // Clear any existing timeout
-      clearTimeout(speedTimeout);
-
-      // Toggle expansion
-      isExpanded = !isExpanded;
-      speedControl.classList.toggle("expanded", isExpanded);
-
-      // Auto-collapse on mobile after 4 seconds if no selection
-      if (isMobile() && isExpanded) {
-        speedTimeout = setTimeout(() => {
-          speedControl.classList.remove("expanded");
-          isExpanded = false;
-        }, 4000);
-      }
-    }
-  });
-
-  // Close speed control when clicking outside (mobile only)
-  document.addEventListener("click", (e) => {
-    if (isMobile() && isExpanded && !speedControl.contains(e.target)) {
-      clearTimeout(speedTimeout);
-      speedControl.classList.remove("expanded");
-      isExpanded = false;
-    }
-  });
-
-  // Speed option selection
-  document.querySelectorAll(".speed-option").forEach((option) => {
-    option.addEventListener("click", (e) => {
-      // On mobile when collapsed, don't stop propagation so the parent handler can expand
-      if (!(isMobile() && !isExpanded)) {
-        e.stopPropagation();
-      }
-      e.preventDefault();
-      clearTimeout(speedTimeout);
-
-      // If mobile and collapsed, don't change speed - just let it expand
-      if (isMobile() && !isExpanded) {
-        return;
-      }
-
-      // Remove active class from all options
-      document
-        .querySelectorAll(".speed-option")
-        .forEach((o) => o.classList.remove("active"));
-      // Add active class to clicked option
-      e.target.classList.add("active");
-      // Update playback speed
-      playbackSpeed = parseFloat(e.target.dataset.speed);
-
-      // Collapse after selection
-      setTimeout(() => {
-        speedControl.classList.remove("expanded");
-        isExpanded = false;
-      }, 200);
-    });
+    // Cycle to next speed
+    currentSpeedIndex = (currentSpeedIndex + 1) % speeds.length;
+    playbackSpeed = speeds[currentSpeedIndex];
+    updateSpeedDisplay();
   });
 
   // Progress bar interaction

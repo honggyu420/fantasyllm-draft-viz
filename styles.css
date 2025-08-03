@@ -144,12 +144,12 @@ body {
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 95%;
+  width: 85%;
   max-width: 450px;
-  background: rgba(26, 26, 27, 0.5);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(58, 58, 59, 0.3);
+  background: rgba(26, 26, 27, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(58, 58, 59, 0.2);
   border-radius: 32px;
   padding: 12px 16px;
   z-index: 100;
@@ -228,19 +228,30 @@ body {
   position: absolute;
   left: 0;
   display: flex;
+  align-items: center;
+  justify-content: center;
   background: rgba(42, 42, 43, 0.5);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   border-radius: 20px;
-  padding: 2px;
-  overflow: hidden;
-  width: 50px;
-  transition: width 0.3s ease;
+  padding: 8px 12px;
+  min-width: 50px;
   cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.speed-control.expanded {
-  width: 140px;
+.speed-control:hover {
+  background: rgba(42, 42, 43, 0.7);
+  transform: scale(1.02);
+}
+
+.speed-control:active {
+  transform: scale(0.98);
 }
 
 #reset-btn {
@@ -274,71 +285,6 @@ body {
 #fast-backward-btn svg {
   width: 28px;
   height: 28px; /* Match primary button SVG size */
-}
-
-.speed-option {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  padding: 5px 10px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border-radius: 16px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  position: absolute;
-  /* Improve touch targets */
-  min-height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* Prevent text selection on mobile */
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  /* Improve tap response */
-  -webkit-tap-highlight-color: transparent;
-}
-
-.speed-option.active {
-  opacity: 1;
-  pointer-events: auto;
-  position: relative;
-  background: var(--accent-blue);
-  color: var(--text-primary);
-}
-
-.speed-control.expanded .speed-option {
-  opacity: 1;
-  pointer-events: auto;
-  position: relative;
-}
-
-/* Only apply hover effects on non-touch devices */
-@media (hover: hover) and (pointer: fine) {
-  .speed-option:hover {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-  }
-
-  .speed-control.expanded .speed-option.active:hover {
-    background: var(--accent-blue);
-  }
-}
-
-/* Touch device specific styles */
-.touch-device .speed-option:hover {
-  background: transparent;
-  color: var(--text-secondary);
-}
-
-.touch-device .speed-option.active:hover {
-  background: var(--accent-blue);
-  color: var(--text-primary);
 }
 
 .progress-bar {
