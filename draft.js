@@ -439,7 +439,7 @@ function updateDraftStatus(pick) {
         teamRect.left >= boardRect.left && teamRect.right <= boardRect.right;
 
       if (!isTeamVisible) {
-        teamFlashDelay = 200; // Match player card delay
+        teamFlashDelay = 250; // Match player card delay
       }
     }
   }
@@ -528,7 +528,7 @@ function addPlayerToTeam(teamId, position, playerCard, pick) {
 
           if (!isTeamVisible) {
             needsScroll = true;
-            scrollDelay = 150;
+            scrollDelay = 250;
             setTimeout(() => {
               scrollToPlayerCardDiagonal(playerCard, pick.team);
             }, 50);
