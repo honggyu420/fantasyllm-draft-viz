@@ -401,6 +401,11 @@ body {
   grid-template-columns: repeat(7, 1fr);
   gap: 10px;
   margin-bottom: 20px;
+  scroll-behavior: smooth;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 .team-column {

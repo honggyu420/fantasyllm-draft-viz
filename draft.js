@@ -425,14 +425,35 @@ function updateDraftStatus(pick) {
   // Update pick label on handle
   document.getElementById("pick-label").textContent = `Pick ${pick.pick}`;
 
-  // Flash the team column
-  const teamColumn = document.getElementById(`team-${pick.team}`);
-  if (teamColumn) {
-    teamColumn.classList.add("picking");
-    setTimeout(() => {
-      teamColumn.classList.remove("picking");
-    }, 800);
+  // Check if scrolling is needed and set appropriate delay for team column flashing
+  let teamFlashDelay = 0;
+
+  if (window.innerWidth <= 1400) {
+    // Check if horizontal scroll is needed
+    const board = document.querySelector(".draft-board");
+    const teamElement = document.getElementById(`team-${pick.team}`);
+    if (teamElement && board) {
+      const teamRect = teamElement.getBoundingClientRect();
+      const boardRect = board.getBoundingClientRect();
+      const isTeamVisible =
+        teamRect.left >= boardRect.left && teamRect.right <= boardRect.right;
+
+      if (!isTeamVisible) {
+        teamFlashDelay = 200; // Match player card delay
+      }
+    }
   }
+
+  // Team column flashing with dynamic delay
+  setTimeout(() => {
+    const teamColumn = document.getElementById(`team-${pick.team}`);
+    if (teamColumn) {
+      teamColumn.classList.add("picking");
+      setTimeout(() => {
+        teamColumn.classList.remove("picking");
+      }, 800);
+    }
+  }, teamFlashDelay);
 
   // Auto-scroll is now handled diagonally in the addPlayerCard function
 }
@@ -487,27 +508,63 @@ function addPlayerToTeam(teamId, position, playerCard, pick) {
       ".position-count"
     ).textContent = `${filledSlots}/${getPositionLimit(position)}`;
 
-    // Add highlight effect for new picks
-    playerCard.classList.add("new-pick");
+    // Start with player card hidden and delay appearance until flash time
     playerCard.style.opacity = "0";
 
     requestAnimationFrame(() => {
-      playerCard.style.transition = "opacity 0.3s ease-out";
-      playerCard.style.opacity = "1";
+      let needsScroll = false;
+      let scrollDelay = 0;
 
-      // Scroll diagonally to the player card in horizontal scroll mode
+      // Check if horizontal scrolling is needed (mobile)
       if (window.innerWidth <= 1400) {
-        setTimeout(() => {
-          scrollToPlayerCardDiagonal(playerCard, pick.team);
-        }, 100);
-      } else {
-        scrollToPlayerCard(playerCard);
+        const board = document.querySelector(".draft-board");
+        const teamElement = document.getElementById(`team-${pick.team}`);
+        if (teamElement && board) {
+          const teamRect = teamElement.getBoundingClientRect();
+          const boardRect = board.getBoundingClientRect();
+          const isTeamVisible =
+            teamRect.left >= boardRect.left &&
+            teamRect.right <= boardRect.right;
+
+          if (!isTeamVisible) {
+            needsScroll = true;
+            scrollDelay = 150;
+            setTimeout(() => {
+              scrollToPlayerCardDiagonal(playerCard, pick.team);
+            }, 50);
+          }
+        }
       }
 
-      // Remove the highlight class after animation
+      // Check if vertical scrolling is needed (always check)
+      const rect = playerCard.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const cardTop = rect.top;
+      const cardBottom = rect.bottom;
+      const visibleTop = 50;
+      const visibleBottom = viewportHeight - 50;
+
+      if (cardTop < visibleTop || cardBottom > visibleBottom) {
+        needsScroll = true;
+        if (scrollDelay === 0) {
+          scrollDelay = 100;
+        }
+        setTimeout(() => {
+          scrollToPlayerCard(playerCard);
+        }, 50);
+      }
+
+      // Show player card and add flashing
+      setTimeout(() => {
+        playerCard.style.transition = "opacity 0.3s ease-out";
+        playerCard.style.opacity = "1";
+        playerCard.classList.add("new-pick");
+      }, scrollDelay);
+
+      // Remove the highlight class after animation completes
       setTimeout(() => {
         playerCard.classList.remove("new-pick");
-      }, 800);
+      }, scrollDelay + 800);
     });
   }
 }
@@ -676,8 +733,7 @@ function scrollToPlayerCardDiagonal(playerCard, teamId) {
 
   if (!teamElement || !board) return;
 
-  // Use native smooth scrolling but coordinate the timing
-  // First scroll horizontally to the team
+  // Use native smooth scrolling with proper setup
   const teamRect = teamElement.getBoundingClientRect();
   const boardRect = board.getBoundingClientRect();
   const horizontalTarget =
@@ -688,7 +744,7 @@ function scrollToPlayerCardDiagonal(playerCard, teamId) {
     behavior: "smooth",
   });
 
-  // Then check if we need to scroll vertically
+  // Then check if we need to scroll vertically with reduced delay
   setTimeout(() => {
     const cardRect = playerCard.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
@@ -712,7 +768,7 @@ function scrollToPlayerCardDiagonal(playerCard, teamId) {
         behavior: "smooth",
       });
     }
-  }, 400); // Increased delay when vertical scroll is needed
+  }, 200); // Reduced delay for vertical scroll
 }
 
 // Scroll vertically to center the player card in view
