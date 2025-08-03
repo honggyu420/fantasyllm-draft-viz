@@ -9,38 +9,38 @@ let animationTimeout = null;
 const teamColors = {
   o3: {
     primary: "#7B68EE",
-    secondary: "#9370DB",
-    gradient: "linear-gradient(135deg, #7B68EE, #9370DB)",
+    secondary: "#FF6B9D", // Updated to match gradient
+    gradient: "linear-gradient(135deg, #7B68EE, #FF6B9D)",
   },
   "claude-sonnet-4": {
     primary: "#F59E0B",
-    secondary: "#D97706",
-    gradient: "linear-gradient(135deg, #F59E0B, #D97706)",
+    secondary: "#FF6B6B", // Updated to match gradient
+    gradient: "linear-gradient(135deg, #F59E0B, #FF6B6B)",
   },
   "claude-code": {
     primary: "#FF6B6B",
-    secondary: "#FFE66D",
+    secondary: "#FFE66D", // Already matches
     gradient: "linear-gradient(135deg, #FF6B6B, #FFE66D)",
   },
   "gpt-4.1": {
     primary: "#10B981",
-    secondary: "#059669",
-    gradient: "linear-gradient(135deg, #10B981, #059669)",
+    secondary: "#06B6D4", // Updated to match gradient
+    gradient: "linear-gradient(135deg, #10B981, #06B6D4)",
   },
   "gemini-2.5-pro": {
-    primary: "#4ECDC4",
-    secondary: "#44A1A0",
-    gradient: "linear-gradient(135deg, #4ECDC4, #44A1A0)",
+    primary: "#3B82F6",
+    secondary: "#F59E0B", // Updated to match gradient
+    gradient: "linear-gradient(135deg, #3B82F6, #F59E0B)",
   },
   "deepseek-r1": {
-    primary: "#3B82F6",
-    secondary: "#2563EB",
-    gradient: "linear-gradient(135deg, #3B82F6, #2563EB)",
+    primary: "#4ECDC4",
+    secondary: "#A855F7", // Updated to match gradient
+    gradient: "linear-gradient(135deg, #4ECDC4, #A855F7)",
   },
   "grok-4": {
     primary: "#EC4899",
-    secondary: "#DB2777",
-    gradient: "linear-gradient(135deg, #EC4899, #DB2777)",
+    secondary: "#8B5CF6", // Updated to match gradient
+    gradient: "linear-gradient(135deg, #EC4899, #8B5CF6)",
   },
 };
 
@@ -89,14 +89,24 @@ function createTeamColumn(teamId, teamData) {
   const teamColor = teamColors[teamId];
   column.style.setProperty("--team-primary", teamColor.primary);
   column.style.setProperty("--team-secondary", teamColor.secondary);
+  column.style.setProperty("--team-gradient", teamColor.gradient);
+
+  // Debug: log the gradient being applied
+  console.log(`Team ${teamId} gradient:`, teamColor.gradient);
 
   // Team header
   const header = document.createElement("div");
   header.className = "team-header";
-  header.style.background = teamColor.gradient;
-  header.innerHTML = `
-        <h3>${formatTeamName(teamId)}</h3>
-    `;
+
+  const h3 = document.createElement("h3");
+  h3.textContent = formatTeamName(teamId);
+  h3.style.background = teamColor.gradient;
+  h3.style.color = "white";
+  h3.style.borderRadius = "28px 28px 0 0";
+  h3.style.padding = "10px";
+  h3.style.margin = "0";
+
+  header.appendChild(h3);
   column.appendChild(header);
 
   // Roster sections
@@ -485,11 +495,11 @@ function animatePick(pickIndex) {
 // Update draft status display
 function updateDraftStatus(pick) {
   const pickDisplay = document.getElementById("current-pick-display");
+  const teamColor = teamColors[pick.team];
+
   pickDisplay.innerHTML = `
         <span class="pick-context">R${pick.round} • P${pick.pick}</span>
-        <span class="picking-team" style="color: ${
-          teamColors[pick.team].primary
-        }">
+        <span class="picking-team" id="picking-team-name">
             ${formatTeamName(pick.team)}
         </span>
         <span class="picking-action">
@@ -500,6 +510,16 @@ function updateDraftStatus(pick) {
           positionColors[pick.player_position]
         }">${pick.player_position}</span>
     `;
+
+  // Apply gradient to the team name in the announcement
+  const teamNameElement = document.getElementById("picking-team-name");
+  if (teamNameElement) {
+    teamNameElement.style.background = teamColor.gradient;
+    teamNameElement.style.color = "white";
+    teamNameElement.style.padding = "4px 8px";
+    teamNameElement.style.borderRadius = "12px";
+    teamNameElement.style.fontWeight = "700";
+  }
 
   // Update pick label on handle
   document.getElementById("pick-label").textContent = `Pick ${pick.pick}`;

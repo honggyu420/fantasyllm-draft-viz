@@ -430,7 +430,7 @@ body {
 .draft-board {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
+  gap: 0px;
   margin-bottom: 20px;
   scroll-behavior: smooth;
 }
@@ -445,8 +445,9 @@ html {
   -webkit-backdrop-filter: blur(8px);
   border-radius: 28px;
   border: 1px solid rgba(58, 58, 59, 0.3);
-  overflow: hidden;
+  overflow: visible;
   transition: transform 0.2s;
+  margin: 10px 5px;
 }
 
 .team-column:hover {
@@ -461,22 +462,20 @@ html {
 @keyframes team-flash {
   0% {
     box-shadow: 0 0 0 0 transparent;
-    border-color: var(--border-color);
+    border: 1px solid rgba(58, 58, 59, 0.3);
   }
   50% {
-    box-shadow: 0 0 15px 2px var(--team-primary);
-    border-color: var(--team-primary);
+    box-shadow: 0 0 15px 2px var(--team-secondary);
+    border: 2px solid var(--team-primary);
   }
   100% {
     box-shadow: 0 0 0 0 transparent;
-    border-color: var(--border-color);
+    border: 1px solid rgba(58, 58, 59, 0.3);
   }
 }
 
 .team-header {
-  padding: 10px;
   text-align: center;
-  color: white;
   position: relative;
   overflow: hidden;
 }
@@ -484,15 +483,20 @@ html {
 .team-header h3 {
   font-size: 1.1rem;
   font-weight: 700;
-  margin: 0;
 }
 
 .team-roster {
   padding: 10px;
+  background: rgba(42, 42, 43, 0.3);
+  border-radius: 12px 12px 0 0;
+  margin-top: 2px;
 }
 
 .position-section {
   margin-bottom: 8px;
+  background: rgba(42, 42, 43, 0.2);
+  border-radius: 12px;
+  padding: 8px;
 }
 
 .position-header {
@@ -730,8 +734,8 @@ html {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    gap: 10px;
-    padding: 0 20px;
+    gap: 0px;
+    padding: 0 15px;
   }
 
   .draft-board::-webkit-scrollbar {
